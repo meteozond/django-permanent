@@ -25,7 +25,9 @@ class RegularModel(BaseTestModel):
 
 
 class RemovableRegularDepended(PermanentModel, BaseTestModel):
-    dependence = models.ForeignKey(RegularModel, on_delete=models.CASCADE)
+    dependence = models.ForeignKey(
+        RegularModel, on_delete=models.SET_NULL, null=True
+    )
 
 
 class RemovableDepended(BaseTestModel):
@@ -33,15 +35,21 @@ class RemovableDepended(BaseTestModel):
 
 
 class NonRemovableDepended(PermanentModel, BaseTestModel):
-    dependence = models.ForeignKey(MyPermanentModel, on_delete=models.DO_NOTHING)
+    dependence = models.ForeignKey(
+        MyPermanentModel, on_delete=models.DO_NOTHING
+    )
 
 
 class NonRemovableNullableDepended(PermanentModel, BaseTestModel):
-    dependence = models.ForeignKey(MyPermanentModel, on_delete=models.SET_NULL, null=True)
+    dependence = models.ForeignKey(
+        MyPermanentModel, on_delete=models.SET_NULL, null=True
+    )
 
 
 class RemovableNullableDepended(PermanentModel, BaseTestModel):
-    dependence = models.ForeignKey(MyPermanentModel, on_delete=models.SET_NULL, null=True)
+    dependence = models.ForeignKey(
+        MyPermanentModel, on_delete=models.SET_NULL, null=True
+    )
 
 
 class PermanentDepended(PermanentModel, BaseTestModel):
@@ -53,8 +61,12 @@ class M2MFrom(BaseTestModel):
 
 
 class PermanentM2MThrough(PermanentModel):
-    m2m_from = models.ForeignKey('M2MFrom', on_delete=models.CASCADE)
-    m2m_to = models.ForeignKey('M2MTo', on_delete=models.CASCADE)
+    m2m_from = models.ForeignKey(
+        'M2MFrom', on_delete=models.SET_NULL, null=True
+    )
+    m2m_to = models.ForeignKey(
+        'M2MTo', on_delete=models.SET_NULL, null=True
+    )
 
 
 class M2MTo(BaseTestModel):
@@ -69,9 +81,15 @@ class MyPermanentQuerySet(PermanentQuerySet):
 class MyPermanentModelWithManager(PermanentModel, BaseTestModel):
     name = models.CharField(max_length=255, blank=True, null=True)
 
-    objects = MultiPassThroughManager(MyPermanentQuerySet, NonDeletedQuerySet)
-    deleted_objects = MultiPassThroughManager(MyPermanentQuerySet, DeletedQuerySet)
-    any_objects = MultiPassThroughManager(MyPermanentQuerySet, PermanentQuerySet)
+    objects = MultiPassThroughManager(
+        MyPermanentQuerySet, NonDeletedQuerySet
+    )
+    deleted_objects = MultiPassThroughManager(
+        MyPermanentQuerySet, DeletedQuerySet
+    )
+    any_objects = MultiPassThroughManager(
+        MyPermanentQuerySet, PermanentQuerySet
+    )
 
 
 class TestQS(object):
@@ -88,3 +106,15 @@ class RestoreOnCreateModel(PermanentModel, BaseTestModel):
 
     class Permanent:
         restore_on_create = True
+
+
+class LazyReferencePermanent(PermanentModel, BaseTestModel):
+    """Test model with lazy reference (string) - valid configuration."""
+    # Lazy reference to another PermanentModel - OK!
+    permanent = models.ForeignKey(
+        'MyPermanentModel', on_delete=models.CASCADE
+    )
+    # Lazy reference to RegularModel with SET_NULL - also OK!
+    regular = models.ForeignKey(
+        'RegularModel', on_delete=models.SET_NULL, null=True
+    )

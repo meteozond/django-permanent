@@ -1,0 +1,95 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10.x", "3.11.x", "3.12.x"]
+        django-version:
+          - "Django>=4.2,<5.0"
+          - "Django>=5.0,<5.1"
+          - "Django>=5.1,<6.0"
+          - "git+https://github.com/django/django.git@main"
+        exclude:
+          # Django 7.0 dev requires Python >= 3.12
+          - python-version: "3.10.x"
+            django-version: "git+https://github.com/django/django.git@main"
+          - python-version: "3.11.x"
+            django-version: "git+https://github.com/django/django.git@main"
+
+    steps:
+    - uses: actions/checkout@v4
+      if: ${{ !env.ACT }}
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Create isolated virtualenv
+      run: |
+        python -m venv /tmp/venv-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}
+
+    - name: Install dependencies
+      run: |
+        source /tmp/venv-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}/bin/activate
+        pip install -q --upgrade pip
+        pip install -q "${{ matrix.django-version }}"
+        pip install -q -e ".[test]"
+
+    - name: Lint with flake8
+      run: |
+        source /tmp/venv-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}/bin/activate
+        flake8 django_permanent
+
+    - name: Run tests with coverage
+      continue-on-error: ${{ contains(matrix.django-version, 'git+https://') }}
+      env:
+        COVERAGE_FILE: /tmp/.coverage-${{ github.run_id }}-${{ strategy.job-index }}
+        TEST_VERBOSITY: 2
+      run: |
+        source /tmp/venv-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}/bin/activate
+        coverage run runtests.py
+
+    - name: Coverage report (CI)
+      if: matrix.python-version == '3.12' && matrix.django-version == 'Django>=5.2' && !env.ACT
+      continue-on-error: true
+      env:
+        COVERAGE_FILE: /tmp/.coverage-${{ github.run_id }}-${{ strategy.job-index }}
+      run: |
+        source /tmp/venv-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}/bin/activate
+        if [ -f "$COVERAGE_FILE" ]; then
+          coverage report --skip-covered --skip-empty --precision=1
+        else
+          echo "No coverage file found at $COVERAGE_FILE"
+        fi
+
+    - name: Coverage report (act - detailed)
+      if: matrix.python-version == '3.12' && matrix.django-version == 'Django>=5.2' && env.ACT
+      continue-on-error: true
+      env:
+        COVERAGE_FILE: /tmp/.coverage-${{ github.run_id }}-${{ strategy.job-index }}
+      run: |
+        source /tmp/venv-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}/bin/activate
+        if [ -f "$COVERAGE_FILE" ]; then
+          coverage report -m --skip-covered --skip-empty --precision=2
+        else
+          echo "No coverage file found at $COVERAGE_FILE"
+        fi
+
+    - name: Upload coverage to Coveralls
+      if: matrix.python-version == '3.12' && matrix.django-version == 'Django>=5.2' && !env.ACT
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        COVERAGE_FILE: /tmp/.coverage-${{ github.run_id }}-${{ strategy.job-index }}
+      run: |
+        source /tmp/venv-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}/bin/activate
+        pip install -q coveralls
+        coveralls

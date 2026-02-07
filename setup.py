@@ -2,39 +2,47 @@
 # -*- coding: utf-8 -*-
 from setuptools import find_packages, setup
 
-tests_require = ["Django>=1.6.0"]
-
-try:
-    import django
-    if django.VERSION < (1, 7, 0):
-        tests_require.append("django-model-utils==2.3.1")
-except ImportError:
-    pass
-
 setup(
     name='django-permanent',
-    version='1.1.7',
+    version='2.0.0',
     description='Yet another approach to provide soft (logical) delete or masking (thrashing) django models instead of deleting them physically from db.',
-    author='Mikhail Antonov',
-    author_email='atin65536@gmail.com',
-    long_description=open('README.rst').read(),
-    url='https://github.com/MnogoByte/django-permanent',
+    author='Alexander Klimenko',
+    author_email='alex@erix.ru',
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
+    url='https://github.com/meteozond/django-permanent',
     packages=find_packages(),
-    install_requires=["Django>=1.6.0"],
+    install_requires=["Django>=4.2,<6.0"],
+    python_requires='>=3.10',
     keywords=['django', 'delete', 'undelete', 'safedelete', 'remove', 'restore', 'softdelete', 'logicaldelete', 'trash'],
     classifiers=[
         "Framework :: Django",
+        "Framework :: Django :: 4.2",
+        "Framework :: Django :: 5.0",
+        "Framework :: Django :: 5.1",
+        "Framework :: Django :: 5.2",
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
         "Operating System :: OS Independent",
         "Topic :: Software Development",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Development Status :: 4 - Beta",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: BSD License",
     ],
-    tests_require=tests_require,
-    test_suite='runtests.runtests',
+    # Modern approach - use extras_require instead of tests_require
+    extras_require={
+        'test': [
+            'coverage>=7.0',
+            'flake8>=6.0',
+        ],
+        'dev': [
+            'coverage>=7.0',
+            'flake8>=6.0',
+            'coveralls>=3.3',
+        ],
+    },
     license="BSD"
 )
