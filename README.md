@@ -24,6 +24,19 @@ python setup.py install
 - Python 3.10+
 - Django 4.2+
 
+**Setup:**
+
+Add `django_permanent` to your `INSTALLED_APPS`:
+
+```python
+INSTALLED_APPS = [
+    ...
+    'django_permanent',
+]
+```
+
+This enables Django System Checks that warn about problematic configurations.
+
 ## Quick Start
 
 To create a non-deletable model just inherit it from `PermanentModel`:
