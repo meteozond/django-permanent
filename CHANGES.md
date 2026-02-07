@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.0.1 (development) [SUPERSEDED]
+
+- nothing changed yet
+
+
 ## 2.0.0 (2026-02-07)
 
 **Related Issues & PRs from MnogoByte/django-permanent:**
