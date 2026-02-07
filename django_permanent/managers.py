@@ -1,8 +1,8 @@
-import django
 from django.db.models import Manager
 
 
 def QuerySetManager(qs):
+    """Factory function to create a manager from a QuerySet class."""
     class QuerySetManager(Manager):
         qs_class = qs
 
@@ -18,15 +18,13 @@ def QuerySetManager(qs):
 
 
 def MultiPassThroughManager(*classes):
+    """
+    Create a manager from multiple QuerySet classes
+    using multiple inheritance.
+    """
     name = "".join([cls.__name__ for cls in classes])
-    if django.VERSION < (1, 7, 0):
-        from model_utils.managers import PassThroughManager
-        result_class = PassThroughManager.for_queryset_class(type(name, classes, {}))
-        result = result_class()
-
-    else:
-        result_class = type(name, classes, {})
-        result = result_class.as_manager()
+    result_class = type(name, classes, {})
+    result = result_class.as_manager()
 
     globals()[name] = result_class
 

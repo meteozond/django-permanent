@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import sys
 
@@ -11,14 +13,13 @@ DEFAULT_SETTINGS = dict(
     ),
     DATABASES={
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3'
+            'ENGINE': 'django.db.backends.sqlite3',
         }
     },
-    MIDDLEWARE_CLASSES=[]
+    MIDDLEWARE_CLASSES=[],
+    DEFAULT_AUTO_FIELD='django.db.models.BigAutoField',
 )
 
-if django.VERSION < (1, 7, 0):
-    DEFAULT_SETTINGS['INSTALLED_APPS'] += ('django_permanent.tests.test_app', )
 
 def runtests(*test_args):
     if not django.conf.settings.configured:
@@ -30,8 +31,12 @@ def runtests(*test_args):
 
     parent = os.path.dirname(os.path.abspath(__file__))
     sys.path.insert(0, parent)
+
+    # verbosity: 0=minimal, 1=normal(dots), 2=verbose(test names), 3=very verbose
+    verbosity = int(os.environ.get('TEST_VERBOSITY', '1'))
+
     from django.test.runner import DiscoverRunner
-    failures = DiscoverRunner(verbosity=1, interactive=True, failfast=True).run_tests(test_args)
+    failures = DiscoverRunner(verbosity=verbosity, interactive=True, failfast=True).run_tests(test_args)
     sys.exit(failures)
 
 if __name__ == '__main__':

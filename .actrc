@@ -1,0 +1,5 @@
+# act configuration
+# See: https://github.com/nektos/act
+
+# Mount project directory into containers (faster, uses host files)
+--bind

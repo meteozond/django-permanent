@@ -1,0 +1,69 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Build sdist
+      run: python setup.py sdist
+
+    - name: Create GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        TAG_NAME=${GITHUB_REF#refs/tags/}
+        gh release create "$TAG_NAME" \
+          --title "Release $TAG_NAME" \
+          --generate-notes \
+          dist/*.tar.gz
+
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+
+    - name: Add next version template to CHANGES.md
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Extract version from tag (v2.0.1 -> 2.0.1)
+        TAG_NAME=${GITHUB_REF#refs/tags/v}
+
+        # Increment patch version (2.0.1 -> 2.0.2)
+        IFS='.' read -r MAJOR MINOR PATCH <<< "$TAG_NAME"
+        NEXT_VERSION="$MAJOR.$MINOR.$((PATCH + 1))"
+
+        # Add template for next version at the top (after # CHANGELOG)
+        awk -v version="$NEXT_VERSION" '
+          /^# CHANGELOG/ {
+            print;
+            print "";
+            print "## " version " (development) [SUPERSEDED]";
+            print "";
+            print "- nothing changed yet";
+            print "";
+            next
+          }
+          {print}
+        ' CHANGES.md > CHANGES.md.tmp && mv CHANGES.md.tmp CHANGES.md
+
+        # Commit and push
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add CHANGES.md
+        git commit -m "Prepare CHANGES.md for v$NEXT_VERSION [skip ci]"
+        git push origin HEAD:master
