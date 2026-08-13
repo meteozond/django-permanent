@@ -12,7 +12,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/meteozond/django-permanent',
     packages=find_packages(),
-    install_requires=["Django>=4.2,<6.0"],
+    install_requires=["Django>=4.2,<7.1"],
     python_requires='>=3.10',
     keywords=['django', 'delete', 'undelete', 'safedelete', 'remove', 'restore', 'softdelete', 'logicaldelete', 'trash'],
     classifiers=[
