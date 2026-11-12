@@ -2,7 +2,11 @@
 
 ## 2.0.1 (development) [SUPERSEDED]
 
-- nothing changed yet
+- Allow Django 6.x: dependency range is now `Django>=4.2,<7.0` (#2, thanks @bashu)
+- Add Django 6.0, 6.1 and Python 3.13, 3.14, 3.15 trove classifiers
+- CI: test every Django 4.2–6.1 release on each Python version it officially supports (3.10–3.15)
+- CI: add a job for the newest Django alpha/beta/rc (allowed to fail)
+- CI: fix coverage report and Coveralls upload, which never ran because of mismatched matrix conditions
 
 
 ## 2.0.0 (2026-02-07)

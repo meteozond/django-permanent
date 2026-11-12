@@ -22,7 +22,7 @@ python setup.py install
 
 **Requirements:**
 - Python 3.10+
-- Django 4.2+
+- Django 4.2–6.x
 
 **Setup:**
 
@@ -203,8 +203,8 @@ PERMANENT_FIELD = 'deleted'
 
 ## Requirements
 
-- Django 4.2+
-- Python 3.10, 3.11, 3.12+
+- Django 4.2–6.x
+- Python 3.10–3.15
 
 ## Testing
 
