@@ -102,8 +102,12 @@ jobs:
 
     - name: Upload coverage to Coveralls
       if: matrix.python-version == '3.12' && matrix.django-version == 'Django>=6.1,<6.2' && !env.ACT
+      # an outage of the external service must not fail the test run
+      continue-on-error: true
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        # fork pull requests get no repository secrets; coveralls falls back to this token
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERAGE_FILE: /tmp/.coverage-${{ github.run_id }}-${{ strategy.job-index }}
       run: |
         source /tmp/venv-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}/bin/activate
