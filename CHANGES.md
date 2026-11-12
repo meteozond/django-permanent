@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.0.2 (development) [SUPERSEDED]
+
+- nothing changed yet
+
+
 ## 2.0.1 (2026-11-12)
 
 - Allow Django 6.x: dependency range is now `Django>=4.2,<7.0` (#2, thanks @bashu)
