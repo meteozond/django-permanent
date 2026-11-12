@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='django-permanent',
-    version='2.0.0',
+    version='2.0.1',
     description='Yet another approach to provide soft (logical) delete or masking (thrashing) django models instead of deleting them physically from db.',
     author='Alexander Klimenko',
     author_email='alex@erix.ru',
@@ -12,7 +12,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/meteozond/django-permanent',
     packages=find_packages(),
-    install_requires=["Django>=4.2,<7.1"],
+    install_requires=["Django>=4.2,<7.0"],
     python_requires='>=3.10',
     keywords=['django', 'delete', 'undelete', 'safedelete', 'remove', 'restore', 'softdelete', 'logicaldelete', 'trash'],
     classifiers=[
@@ -21,6 +21,8 @@ setup(
         "Framework :: Django :: 5.0",
         "Framework :: Django :: 5.1",
         "Framework :: Django :: 5.2",
+        "Framework :: Django :: 6.0",
+        "Framework :: Django :: 6.1",
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
         "Operating System :: OS Independent",
@@ -29,6 +31,9 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
+        "Programming Language :: Python :: 3.15",
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: BSD License",
     ],
