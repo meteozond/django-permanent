@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 2.0.1 (development) [SUPERSEDED]
+## 2.0.1 (2026-11-12)
 
 - Allow Django 6.x: dependency range is now `Django>=4.2,<7.0` (#2, thanks @bashu)
 - Add Django 6.0, 6.1 and Python 3.13, 3.14, 3.15 trove classifiers
